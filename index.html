@@ -21,6 +21,11 @@
     </head>
     <body>
 
+        <div id="kmeans">
+
+
+        </div>
+
         <button onclick="activar()">activar</button>
         <script type="text/javascript">
             var centroides = [];
@@ -507,7 +512,7 @@
                                      .range([2, 5]);
         
                 //Create SVG element
-                svg = d3.select("body")
+                svg = d3.select("#kmeans")
                             .append("svg")
                             .attr("width", w)
                             .attr("height", h);
