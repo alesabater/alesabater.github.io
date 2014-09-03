@@ -20,6 +20,7 @@
         </style>
     </head>
     <body>
+
         <button onclick="activar()">activar</button>
         <script type="text/javascript">
             var centroides = [];
@@ -298,6 +299,10 @@
 
 
             function activar(){
+                if(svg){
+                    d3.select("svg").remove();
+                }
+                centroides = [];
                 stringToArray();
                 initCentroides(4);
                 for(var j in centroides){
@@ -308,6 +313,7 @@
                 graficar();
                 movimiento = true;
                 setInterval(function(){movimientoCentroides(); actualizarGrafica();},1000);
+                
 
 
                 /*
@@ -505,7 +511,6 @@
                             .append("svg")
                             .attr("width", w)
                             .attr("height", h);
-
             
                 //Define X axis
                 var xAxis = d3.svg.axis()
