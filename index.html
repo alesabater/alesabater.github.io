@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>K-means Strings</title>
+        <script type="text/javascript" src="d3.v3.js"></script>
+        <link rel="stylesheet" type="text/css" href="bootstrap.min.css">
+        <style type="text/css">
+            .axis path,
+            .axis line {
+                fill: none;
+                stroke: black;
+                shape-rendering: crispEdges;
+            }
+            
+            .axis text {
+                font-family: sans-serif;
+                font-size: 11px;
+            }
+
+            .boton {
+                display:block;
+            }
+            .center {
+                margin-left: auto;
+                margin-right: auto;
+                width: 70%;
+
+            }
+            #kmeans{
+                margin-top: 100px;
+
+            }
+            .graph{
+                margin-top: 100px;
+            }
+            svg {
+                margin-left: 50px;
+                margin-top: 80px;
+            }
+
+        </style>
+    </head>
+    <body>
+
+        <div class="alert alert-info" style="text-align: center" role="alert">
+            
+            <h3>These are some examples of visualizations using d3.js library.</h3>
+        </div>
+        <div class="row">
+            
+            <div id="kmeans" class="col-md-6">
+                <button onclick="activar()" class="btn btn-info btn-lg boton center" >Run Kmeans</button>
+            </div>
+            <div class="graph col-md-6">
+                <button onclick="separarClusters()" class="btn btn-success btn-lg boton center">Separar</button>
+            </div>
+        </div>
+        <div class="row">
+            
+            <div class="alert alert-info col-md-6" style="text-align: center" role="alert">
+                <h4>Recreation of Kmeans Algorithm with 4 clusters made in Javascript. The distance measure used is the Levenshtein distance, which measures the similarity between 2 Strings</h4>
+            </div>
+            <div class="alert alert-success col-md-6" style="text-align: center" role="alert">
+                <h4>Example of a way to control clusters dynamically using d3.<br>s</h4>
+            </div>
+        </div>
+
+        
+        <script type="text/javascript">
+            var centroides = [];
+            var asignaciones = [];
+            var dataRaw = [
+                            "10",  "02","0E","61","02","4A","A1","6F","EF","9E","35","1C","0B",
+                            "11",
+                            "D8",
+                            "2B",
+                            "D9",
+                            "C3",
+                            "C2",
+                            "10",
+                            "10",
+                            "01",
+                            "02",
+                            "0E",
+                            "61",
+                            "01",
+                            "01",
+                            "01",
+                            "FE",
+                            "CE",
+                            "56",
+                            "4C",
+                            "FE",
+                            "35",
+                            "1C",
+                            "09",
+                            "0D",
+                            "3E",
+                            "10",
+                            "EC",
+                            "13",
+                            "E2",
+                            "10",
+                            "10",
+                            "01",
+                            "02",
+                            "0E",
+                            "61",
+                            "01",
+                            "01",
+                            "01",
+                            "FE",
+                            "CE",
+                            "56",
+                            "4C",
+                            "FE",
+                            "35",
+                            "1C",
+                            "09",
+                            "0D",
+                            "3E",
+                            "10",
+                            "EC",
+                            "13",
+                            "E2",
+                            "10",
+                            "10",
+                            "01",
+                            "02",
+                            "0E",
+                            "61",
+                            "01",
+                            "01",
+                            "0B",
+                            "5F",
+                            "62",
+                            "B8",
+                            "A4",
+                            "4E",
+                            "25",
+                            "1C",
+                            "03",
+                            "98",
+                            "1D",
+                            "F9",
+                            "9E",
+                            "33",
+                            "F2",
+                            "10",
+                            "10",
+                            "01",
+                            "02",
+                            "0E",
+                            "61",
+                            "01",
+                            "01",
+                            "03",
+                            "67",
+                            "D8",
+                            "98",
+                            "BB",
+                            "6E",
+                            "15",
+                            "1C",
+                            "0D",
+                            "F1",
+                            "CA",
+                            "4B",
+                            "A9",
+                            "34",
+                            "22",
+                            "10",
+                            "10",
+                            "01",
+                            "02",
+                            "0E",
+                            "61",
+                            "01",
+                            "01",
+                            "08",
+                            "49",
+                            "EC",
+                            "DA",
+                            "AC",
+                            "FE",
+                            "35",
+                            "1C",
+                            "01",
+                            "26",
+                            "71",
+                            "F3",
+                            "EC",
+                            "33",
+                            "E2",
+                            "10",
+                            "10",
+                            "01",
+                            "02",
+                            "0E",
+                            "61",
+                            "01",
+                            "01",
+                            "0C",
+                            "44",
+                            "2A",
+                            "D6",
+                            "9D",
+                            "EE",
+                            "55",
+                            "1C",
+                            "08",
+                            "77",
+                            "46",
+                            "EE",
+                            "D5",
+                            "74",
+                            "42",
+                            "10",
+                            "10",
+                            "01",
+                            "02",
+                            "0E",
+                            "61",
+                            "01",
+                            "01",
+                            "0F",
+                            "AB",
+                            "F3",
+                            "6F",
+                            "59",
+                            "4E",
+                            "55",
+                            "1C",
+                            "05",
+                            "D3",
+                            "12",
+                            "DD",
+                            "7C",
+                            "84",
+                            "B2",
+                            "10",
+                            "10",
+                            "01",
+                            "02",
+                            "0E",
+                            "61",
+                            "01",
+                            "01",
+                            "0A",
+                            "F6",
+                            "6B",
+                            "0B",
+                            "CB",
+                            "EE",
+                            "55",
+                            "1C",
+                            "01",
+                            "6B",
+                            "47",
+                            "E2",
+                            "06",
+                            "64",
+                            "C2",
+                            "10",
+                            "10",
+                            "01",
+                            "02",
+                            "0E",
+                            "61",
+                            "01",
+                            "01",
+                            "08",
+                            "E0",
+                            "6F",
+                            "01",
+                            "64",
+                            "8E",
+                            "65",
+                            "1C",
+                            "05",
+                            "F0",
+                            "7C",
+                            "E1",
+                            "95",
+                            "13",
+                            "A2",
+                            "10",
+                            "10",
+                            "01",
+                            "02",
+                            "0E",
+                            "61",
+                            "01",
+                            "01",
+                            "04",
+                            "DD",
+                            "4B",
+                            "F1",
+                            "1C",
+                            "AE",
+                            "45",
+                            "1C",
+                            "09",
+                            "7C",
+                            "3F",
+                            "85",
+                            "61",
+                            "14",
+                            "B2",
+                            "10",
+                            "10",
+                            "01",
+                            "02",
+                            "0E",
+                            "61",
+                            "01",
+                            "01",
+                            "01",
+                            "FE",
+                            "CE",
+                            "56",
+                            "4C"
+                        ];
+            var data = [];
+            var caracteres = {
+                "0":0,
+                "1":1,
+                "2":2, 
+                "3":3,
+                "4":4,
+                "5":5,
+                "6":6,
+                "7":7,
+                "8":8,
+                "9":9,
+                "A":10,
+                "B":11,
+                "C":12,
+                "D":13,
+                "E":14,
+                "F":15,
+            };
+
+
+            function activar(){
+                if(svg){
+                    d3.select("svg").remove();
+                }
+                centroides = [];
+                stringToArray();
+                initCentroides(4);
+                for(var j in centroides){
+                    console.log(centroides[j])
+                };
+                asignarData();
+                crearGrafica();
+                graficar();
+                movimiento = true;
+                setInterval(function(){movimientoCentroides(); actualizarGrafica();},1000);
+                
+
+
+                /*
+                while(movimiento){
+
+                    movimiento = movimientoCentroides();
+                    //actualizarGrafica();
+                    graficar();
+                    //setTimeout(function(){alert("Cambiando Centroides")},1500)
+                    for(var j in centroides){
+                        console.log(centroides[j])
+                    };
+                }
+                mostrarClusters(); */
+            }
+
+            
+
+
+
+            //Convierte los strings en array. Ej: "AA"-> [10,10]
+            function stringToArray(){
+                for(var i in dataRaw){
+                    var aux = [];
+                    for (var j = 0; j < dataRaw[i].length; j++) {
+                        aux[j] = caracteres[dataRaw[i].charAt(j)];
+                    };
+                    data[i]=aux;
+                }
+                console.log(data[0]);
+            }
+
+
+
+            function initCentroides(k){
+                if ( ! k )
+                {
+                    k = 3;
+                }
+
+                //centroides.push("899");
+                //centroides.push("030");
+                //centroides.push(Array(5,5));
+                //centroides.push(Array(2,3));
+                //centroides.push(Array(12,14));
+                //centroides.push(Array(9,3));
+
+                while (k--)
+                {
+                    centroides.push(Array(Math.random()*15,Math.random()*15));
+                }
+            };
+
+            function asignarData() {
+                for (var i in data)
+                {
+                    var instancia = data[i];
+                    var distancias = [];
+
+                    for (var j in centroides)
+                    {
+                        var centroide = centroides[j];
+                        distancias[j] = manhattanDistance(centroide,instancia);
+                    }
+                    asignaciones[i] = distancias.indexOf( Math.min.apply(null, distancias));
+                }
+            }
+
+            function mostrarClusters(){
+                for (var i in data){
+                    console.log("String->"+data[i]+" Cluter->"+asignaciones[i]);
+                }
+            }
+
+
+            manhattanDistance = function(s1,s2){
+                var distance = 0;
+                for (var i = 0; i < s1.length; i++) {
+                    distance += Math.abs(s1[i]-s2[i]);
+                };
+                return distance;
+            }
+
+
+
+            // calcular la distancia levenshtein entre dos strings
+            levenshtein = function(largo,corto) {
+                var cost;
+                
+                // longitud de cada cadena
+                var m = largo.length;
+                var n = corto.length;
+                
+                // asegurar que largo sea largo y corto sea corto
+                if (m < n) {
+                    var aux=largo;largo=corto;corto=aux;
+                    m=largo.length;n=corto.length;
+                }
+                
+                var r = new Array();
+                r[0] = new Array();
+                for (var c = 0; c < n+1; c++) {
+                    r[0][c] = c;
+                }
+                
+                for (var i = 1; i < m+1; i++) {
+                    r[i] = new Array();
+                    r[i][0] = i;
+                    for (var j = 1; j < n+1; j++) {
+                        cost = (largo.charAt(i-1) == corto.charAt(j-1))? 0: 1;
+                        r[i][j] = minimator(r[i-1][j]+1,r[i][j-1]+1,r[i-1][j-1]+cost);
+                    }
+                }
+                return r[m][n];
+            }
+            // retorna el menor valor entre update, delete, insert del caracter
+            minimator = function(x,y,z) {
+                if (x < y && x < z) return x;
+                if (y < x && y < z) return y;
+                return z;
+
+
+            // Saca la media de los puntos pertenecientes a cada cluster y reposiciona el centroide del mismo
+            }
+
+            function movimientoCentroides() {
+                asignarData();
+                var suma = Array( centroides.length); //array que guarda la suma de las dimensiones de todos los puntos asignados a un centroide
+                var cuenta = Array( centroides.length); //cantidad de puntos asignados a un centroide
+                var movimiento = false;
+
+                for(var j in centroides){  //Inicializa el vector cuenta y suma en cero
+                    cuenta[j]=0;
+                    suma[j] = Array(centroides[j].length);
+                    for (var dimension in centroides[j])
+                        suma[j][dimension] = 0;
+
+                }
+
+                for(var indice_punto in asignaciones){ //Calcula cantidad de puntos asignados a un centroide y la suma de las dimensiones de los mismos
+                    var indice_cluster = asignaciones[indice_punto];
+                    var punto = data[indice_punto];
+                    var cluster = centroides[indice_cluster];
+
+                    cuenta[indice_cluster]++;
+
+                    for(var dimension in cluster){
+                        suma[indice_cluster][dimension]+=punto[dimension];
+                    }
+                }
+                for(var indice_cluster in suma){  //Calcula la media de cada centroide y los mueve
+                    /*
+                    if(0 === cuenta[indice_cluster]){
+
+                    }*/
+                    for(var dimension in suma[indice_cluster]){
+                        suma[indice_cluster][dimension] /= cuenta[indice_cluster];
+                    }
+                }
+
+                if(centroides.toString() !== suma.toString()) //retorno true en caso de que los centroides se hayan movido
+                {
+                    movimiento = true;
+                }
+                centroides = suma;
+                return movimiento;
+            }
+
+
+            //Width and height
+            var w = 800;
+            var h = 500;
+            var padding = 20;
+            var colores = Array("red","blue","green","orange","purple","black","grey","pink");
+            var svg, rScale, yScale, xScale;
+
+
+
+            function crearGrafica(){
+                //Create scale functions
+                xScale = d3.scale.linear()
+                                     .domain([0, d3.max(data, function(d) { return d[0]; })])
+                                     .range([padding, w - padding * 2]);
+
+                yScale = d3.scale.linear()
+                                     .domain([0, d3.max(data, function(d) { return d[1]; })])
+                                     .range([h - padding, padding]);
+
+                rScale = d3.scale.linear()
+                                     .domain([0, d3.max(data, function(d) { return d[1]; })])
+                                     .range([2, 5]);
+        
+                //Create SVG element
+                svg = d3.select("#kmeans")
+                            .append("svg")
+                            .attr("width", w)
+                            .attr("height", h);
+            
+                //Define X axis
+                var xAxis = d3.svg.axis()
+                                  .scale(xScale)
+                                  .orient("bottom")
+                                  .ticks(15);
+
+                //Define Y axis
+                var yAxis = d3.svg.axis()
+                                  .scale(yScale)
+                                  .orient("left")
+                                  .ticks(15);
+
+
+                //Create X axis
+                svg.append("g")
+                    .attr("class", "x axis")
+                    .attr("transform", "translate(0," + (h - padding) + ")")
+                    .call(xAxis);
+            
+                //Create Y axis
+                svg.append("g")
+                    .attr("class", "y axis")
+                    .attr("transform", "translate(" + padding + ",0)")
+                    .call(yAxis); 
+            }
+
+
+            function graficar(){
+                
+                svg.selectAll(".data")
+                   .data(data)
+                   .enter()
+                   .append("circle")
+                   .attr("class","data")
+                   .attr("cx", function(d) {
+                        return xScale(d[0]);
+                   })
+                   .attr("cy", function(d) {
+                        return yScale(d[1]);
+                   })
+                   .attr("r", function(d) {
+                        return rScale(1);
+                   })
+                   .attr("fill",function(d,i){
+                        return colores[asignaciones[i]];
+                   });
+
+
+
+                svg.selectAll(".centroides")
+                   .data(centroides)
+                   .enter()
+                   .append("circle")
+                   .attr("class","centroide")
+                   .attr("cx", function(d) {
+                        return xScale(d[0]);
+                   })
+                   .attr("cy", function(d) {
+                        return yScale(d[1]);
+                   })
+                   .attr("r", function(d) {
+                        return 9;
+                   })
+                   .attr("fill",function(d,i){
+                        return colores[i];
+                   });
+
+            
+                /*console.log(centroides);
+                svg.selectAll(".centroides")
+                    .data(centroides)
+                    .enter()
+                    .append("rect")
+                    .attr("x", function(d){return xScale(d[0])})
+                    .attr("y", function(d){return yScale(d[1])})
+                    .attr("width", 13)
+                    .attr("height", 13)
+                    .attr("fill",function(d,i){
+                        return "orange";
+                    }); */
+
+
+            }
+
+            function actualizarGrafica(){
+                //Actualizar la posicion de los centroides
+                   
+
+                    /*svg.selectAll("rect")
+                       .data(centroides)
+                       .transition()
+                       .duration(1000)      
+                        .attr("x", function(d){return xScale(d[0])})
+                        .attr("y", function(d){return yScale(d[1])})
+                        .attr("width", 13)
+                        .attr("height", 13)
+                        .attr("fill",function(d,i){
+                            return "orange";
+                        }); */ 
+
+
+                     svg.selectAll(".centroide")
+                       .data(centroides)
+                       .transition()
+                        .duration(1000)
+                        .attr("cx", function(d) {
+                            return xScale(d[0]);
+                        })
+                        .attr("cy", function(d) {
+                            return yScale(d[1]);
+                        })
+                        .attr("r", function(d) {
+                            return 9;
+                        })
+                        .attr("fill",function(d,i){
+                            return colores[i];
+                        });   
+
+                    svg.selectAll(".data")
+                       .data(data)
+                       .transition()
+                        .duration(300)
+                        .attr("cx", function(d) {
+                            return xScale(d[0]);
+                        })
+                        .attr("cy", function(d) {
+                            return yScale(d[1]);
+                        })
+                        .attr("r", function(d) {
+                             return rScale(1);
+                        })
+                        .attr("fill",function(d,i){
+                            return colores[asignaciones[i]];
+                        });   
+            }
+
+            $(document).ready(function(){
+                
+            });
+
+       
+        </script>
+        
+        <script type="text/javascript">
+        var width = 940, height = 600; //Canvas dimension
+        var nodesNumber = 200, //Number of nodes
+            clustersNumber = 2,  //Clusters Quantity
+            padding2 = 6,
+            radius = d3.scale.sqrt().range([0, 12]),
+            color = d3.scale.category10().domain(d3.range(clustersNumber));
+
+
+
+        var nodes = d3.range(nodesNumber).map(function() { //Cambia VALUE por objeto
+          var i = Math.floor(Math.random() * clustersNumber), //Para color 
+              v = (i + 1) / clustersNumber * -Math.log(Math.random()); //Para el radio
+          return {
+            radius: radius(v),
+            color: color(i),
+            x:Math.random()*width,
+            y:Math.random()*height
+          };
+        });
+        //Locations where nodes will group
+        //var center = {x:width/2, y:height/2};
+        //var clusterCenters = [{x:width/4, y:height/2},{x:width*1/2, y:height/2},{x:width*3/4, y:height/2}];
+
+
+        //Recieves nodes, how many clusters per row for the graph and the types
+        function clusterBuilder(nodes, clustersPerRow, clusterTypes){
+            clusterTypes = ["color"];
+            var clusterCenters = [];
+            var clusters = {};
+            for (var i = 0; i < clusterTypes.length; i++) {
+                //var differentTypes = {};
+                types = {};
+                for (var j = 0; j < nodes.length; j++) {
+                    types[nodes[j][clusterTypes[i]]] = 1;  
+                };
+                clusters[clusterTypes[i]] = types;
+            };
+    
+            for (var clusterType in clusters) {
+                var numberOfSubClusters = Object.keys(clusters[clusterType]).length;
+                var plusX = width/(numberOfSubClusters+1);
+                var x = plusX;
+                for (var key in clusters[clusterType]) {
+                    clusters[clusterType][key] = {x:x,y:500};
+                    x = x + plusX;
+                };
+            };
+            return clusters;
+        };
+
+
+
+        function manageForceField(){
+            this.gravity = -0.01,
+            this.damper = 0.1,
+            this.vis = null,
+            this.force = null,
+            this.circles = null,
+            this.center = {x:width/2, y:height/2},
+            clusterCenters = clusterBuilder(nodes,0,0),
+            that = this,
+
+            this.insertSvg = function(){
+                this.vis = d3.select(".graph").append("svg")
+                        .attr("width", width)
+                        .attr("height", height)
+                        .attr("id", "svg_vis");
+            }
+            this.insertCircles = function(){
+                circles = this.vis.selectAll("circle")
+                        .data(nodes)
+                        .enter().append("circle")
+                        .attr("r", function(d) { return d.radius })
+                        .style("fill", function(d) { return d.color; });
+                
+            }
+            this.groupAll = function(){this.force = d3.layout.force()
+                                .nodes(nodes)
+                                .size([width, height])
+                                .gravity(this.gravity)
+                                .charge(function(d){return (Math.pow(d.radius, 2.0) / 5)*(-1)})
+                                .friction(0.9)
+                                .on("tick",this.groupAllTick)
+                                .start(); },
+            this.breakGroups = function(){this.force = d3.layout.force()
+                                .nodes(nodes)
+                                .size([width, height])
+                                .gravity(this.gravity)
+                                .charge(function(d){return (Math.pow(d.radius, 2.0) / 5)*(-1)})
+                                .friction(0.9)
+                                .on("tick",this.groupClustersTick)
+                                .start(); },
+            this.groupAllTick = function(e){
+                circles.each(function(d){
+                    d.x = d.x + (that.center.x - d.x) * (0.1 + 0.02) * e.alpha;
+                    d.y = d.y + (that.center.y - d.y) * (0.1 + 0.02) * e.alpha;
+                });
+                circles.attr("cx", function(d,i){ return d.x})
+                        .attr("cy", function(d,i){ return d.y });
+            },
+            this.groupClustersTick = function(e){
+                circles.each(function(d,i){
+                    this.center = clusterCenters["color"][d.color];
+                    d.x = d.x + (this.center.x - d.x) * (0.1 + 0.02) * e.alpha;
+                    d.y = d.y + (this.center.y - d.y) * (0.1 + 0.02) * e.alpha;
+                });
+                circles.attr("cx", function(d,i){ return d.x})
+                        .attr("cy", function(d,i){ return d.y*0.8 });
+            },
+            this.clusterBuilder = function(nodes, clustersPerRow, clusterTypes){
+                clusterTypes = ["color"];
+                var clusterCenters = [];
+                var clusters = {};
+                for (var i = 0; i < clusterTypes.length; i++) {
+                    //var differentTypes = {};
+                    types = {};
+                    for (var j = 0; j < nodes.length; j++) {
+                        types[nodes[j][clusterTypes[i]]] = 1;  
+                    };
+                    clusters[clusterTypes[i]] = types;
+                };
+        
+                for (var clusterType in clusters) {
+                    var numberOfSubClusters = Object.keys(clusters[clusterType]).length;
+                    var plusX = width/(numberOfSubClusters+1);
+                    var x = plusX;
+                    for (var key in clusters[clusterType]) {
+                        clusters[clusterType][key] = {x:x,y:500};
+                        x = x + plusX;
+                    };
+                };
+                return clusters;
+            }
+
+        }
+        
+        var manager = new manageForceField();
+        manager.insertSvg();
+        manager.insertCircles();
+        manager.groupAll();
+        var group = false;
+        function separarClusters(){
+            manager.force.stop();
+            if(!group){
+                manager.gravity = -0.01;
+                manager.breakGroups();
+                group = true;
+            }else{
+                manager.gravity = 0.01;
+                manager.groupAll();
+                group = false;
+            }
+            
+        }
+    </script>
+    </body>
+</html>
