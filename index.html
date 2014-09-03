@@ -4,6 +4,7 @@
         <meta charset="utf-8">
         <title>K-means Strings</title>
         <script type="text/javascript" src="d3.v3.js"></script>
+        <link rel="stylesheet" type="text/css" href="bootstrap.min.css">
         <style type="text/css">
             .axis path,
             .axis line {
@@ -21,12 +22,16 @@
     </head>
     <body>
 
+        <div>
+            This is a recreation of the kmeans clustering algorithm with Javascript. The distance used was the Levenshtein distance, which measures the similarities between 2 Strings.
+        </div>
+
         <div id="kmeans">
 
 
         </div>
 
-        <button onclick="activar()">activar</button>
+        <button onclick="activar()" class=class="btn btn-success">activar</button>
         <script type="text/javascript">
             var centroides = [];
             var asignaciones = [];
